@@ -55,7 +55,9 @@ def main():
     depth_subparser.add_argument("-mean", metavar='',help="mean depth to simulate", type=int, default=5)
     depth_subparser.add_argument("-variance", metavar='',help="variance of depth to simulate", type=int, default=2)
     depth_subparser.add_argument("-distribution", metavar='',help="distribution to use to simulate depth from", type=str, default="normal")
-    #depth_subparser.add_argument("-filter", help="flag that indiciates if filtering should be done", action = "store_true")
+    depth_subparser.add_argument("-missing", help="flag that indiciates to remove sites with 0 reads", action = "store_true")
+    depth_subparser.add_argument("-annotate, help="flag that indiciates to only annotate with depth", action = "store_true")
+
     depth_subparser.add_argument("-targets", metavar='',help="Target individuals to simulate features on", type=str, default = "")
 
 
@@ -92,8 +94,15 @@ def main():
         sample_list = parse_target_indivs(args.targets)
         if args.distribution == "poisson":
             args.variance = args.mean
+        elif args.missing:
+            fun = "pos_depth_all"
+        elif args.annotate:
+            fun = "pos_depth_only"
         else:
-            add_depth(args.vcf, args.out, sample_list, args.mean, args.variance, args.distribution, args.filter)
+            fun = "pos_depth_homo"
+
+        print(fun)
+        add_depth(args.vcf, args.out, sample_list, args.mean, args.variance, args.distribution, fun)
 
     if args.mode == "downsample":
         if args.num <=0:
@@ -108,19 +117,6 @@ def main():
         else:
             add_missingness(args.vcf, args.out, sample_list, args.rate)
 
-    # print(args)
-    # sample_list = args.target_populations.strip()
-    # out_dir = args.out_dir
-    # vcf_path = args.vcf_path
-    # name = args.name
-    # pseudohaploid = args.pseudo_haplotype
-    # deaminate = args.deaminate
-    # ds = args.downsample
-
-    # modern_contamination = args.mh_contamination
-    # modern_pops = args.modern_human.strip()
-    # print(modern_pops)
-    # mh_contam_range = args.mh_range
 
     # assert(deaminate >= 0 and deaminate < 1)
     # contamination = args.contamination
