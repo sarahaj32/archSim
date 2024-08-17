@@ -1,0 +1,67 @@
+description: Harney_Patterson_demography_sampling_time_SMBE
+#time_units: years
+#generation_time: 26
+time_units: generations
+
+demes:
+
+- name: p_0
+  start_time: .inf
+  epochs:
+  - {start_size: 10000, end_time: 0}
+
+- name: outgroup # 10
+  ancestors: [p_0]
+  start_time: 1770
+  epochs:
+  - {start_size: 1000, end_time: 0}
+- name: mh_contam # new group to contaminate from
+  ancestors: [p_0]
+  start_time: 1770
+  epochs:
+  - {start_size: 1000, end_time: 0}
+- name: p2_2 # 8
+  ancestors: [p_0]
+  start_time: 1380
+  epochs:
+  - {start_size: 2500, end_time: 0}
+- name: p2_1 # 9
+  ancestors: [p2_2]
+  start_time: 1100
+  epochs:
+  - {start_size: 3300, end_time: 0}
+- name: p1_3 # 7
+  ancestors: [p_0]
+  start_time: 1200
+  epochs:
+  - {start_size: 7000, end_time: 0}
+- name: p1_2 #6
+  ancestors: [p_0]
+  start_time: 1000
+  epochs:
+  - {start_size: 12000, end_time: 0}
+- name: p1_1 # 4
+  ancestors: [p_0]
+  start_time: 1000 
+  epochs:
+  - {start_size: 50000, end_time: 0}
+
+# create the intermediate populations that will form the admixed populations
+- name: admix_a
+  ancestors: [p1_1]
+  start_time: 900 
+  epochs:
+  - {start_size: 12000, end_time: 0}
+- name: admix_b
+  ancestors: [p2_1]
+  start_time: 900
+  epochs:
+  - {start_size: 10000, end_time: 0}
+
+# admix
+- name: admix
+  ancestors: [admix_a, admix_b]
+  proportions: [0.5, 0.5]
+  start_time: 800 
+  epochs:
+  - {start_size: 10000, end_time: 0}
