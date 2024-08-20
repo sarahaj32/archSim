@@ -1,0 +1,10 @@
+{
+"pop1_1":{"population":"p1_1", "num_samples":10, "generations":0},
+"pop1_2":{"population":"p1_2", "num_samples":10, "generations":0},
+"pop1_3":{"population":"p1_3", "num_samples":10,"generations":575},
+"pop2_2":{"population":"p2_2", "num_samples":10, "generations":575},
+"pop2_1":{"population":"p2_1", "num_samples":10, "generations":0},
+"outgroup":{"population":"outgroup", "num_samples":10, "generations":0},
+"admix":{"population":"admix", "num_samples":10, "generations":575},
+"mh_contam":{"population":"mh_contam", "num_samples":1, "generations":0}
+}
