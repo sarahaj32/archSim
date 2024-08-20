@@ -4,7 +4,7 @@ demography:
     samples_json: "helper_files/demo_params/recent_human_samples.json"
 calc_script: "helper_files/calc_scripts/F-statistics-medium_st_admixr_minimal_SMBE.R"
 # all of the simulations that we want to run:
-parameters: ["pseudohaploid", "deaminate", "ancContam", "mhContam", missing] # "original", , "missing", "ancient_sediment" ""dpFilter", "dpFilterMissing", "
+parameters: ["pseudohaploid", "deaminate", "ancContam", "mhContam", "missing", "dpFilterMissing"] # "original", , "missing", "ancient_sediment" "dpFilter", , "
 # rates for contamination, deamination, missingness
 rates:
     deamination: [0.05, 0.1, 0.25]
@@ -18,8 +18,8 @@ pops:
 selection: ["T", "all"] 
 
 # simulation parameters
-ds: ["full", 1000000, ] # 100000, 50000, 30000, 10000, 5000, 2500, 1500, 500, 250
+ds: ["full", 1000000, 100000, 50000, 30000, 10000, 5000, 2500, 1500, 500, 250] # 100000, 50000, 30000, 10000, 5000, 2500, 1500, 500, 250
 statistics: ["dstat", "f3"] # , "f4", "f3"
 chromosomes: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
 tests: ["admix", "relna"] # , "rela"
-reps: 5
+reps: 100
