@@ -1,0 +1,8 @@
+{
+"outgroup":{"population":"Pan", "num_samples":1, "generations":0},
+"Afr":{"population":"AFR", "num_samples":10,"generations":0},
+"Nea":{"population":"NEA2", "num_samples":1, "generations":2100},
+"AMH1":{"population":"AMH1", "num_samples":10, "generations":350},
+"admix":{"population":"MH", "num_samples":10, "generations":350},
+"mh_contam":{"population":"MH", "num_samples":10, "generations":0}
+}

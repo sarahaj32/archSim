@@ -1,0 +1,61 @@
+description: Archaic Admixture into modern humans
+#time_units: years
+#generation_time: 29
+time_units: generations
+
+demes:
+
+- name: Pan # chimp
+  start_time: .inf
+  epochs:
+  - {start_size: 10000, end_time: 0}
+- name: AFR 
+  ancestors: [Pan]
+  start_time: 207_000
+  epochs:
+  - {start_size: 27_122, end_time: 0}
+- name: ARCH # archaic ancestor
+  ancestors: [AFR]
+  start_time: 18_300
+  epochs:
+  - {start_size: 5_000, end_time: 0}
+- name: DEN # denisovan
+  ancestors: [ARCH]
+  start_time: 12_000
+  epochs:
+  - {start_size: 5_000, end_time: 0}
+- name: NEA1 # altai
+  ancestors: [ARCH]
+  start_time: 12_000
+  epochs:
+  - {start_size: 1_000, end_time: 0}
+- name: NEA2 # vindija
+  ancestors: [NEA1]
+  start_time: 6_900
+  epochs:
+  - {start_size: 1_000, end_time: 0}
+- name: AMH1 # early modern human
+  ancestors: [AFR]
+  start_time: 2_100
+  epochs:
+  - {start_size: 500, end_time: 0, end_size: 5_000}
+
+# create the intermediate populations that will form the admixed populations
+- name: admix_a
+  ancestors: [NEA2]
+  start_time: 3_100 
+  epochs:
+  - {start_size: 1_000, end_time: 0}
+- name: admix_b
+  ancestors: [AMH1]
+  start_time: 1_650
+  epochs:
+  - {start_size: 1_000, end_time: 0}
+
+# admix
+- name: MH
+  ancestors: [admix_a, admix_b]
+  proportions: [0.05, 0.95]
+  start_time: 1_550 
+  epochs:
+  - {start_size: 1_000, end_time: 0, end_size: 5_000}
