@@ -21,16 +21,16 @@ def main():
     # Deamination
     deamination_subparser = subparser.add_parser('deaminate', help='Simulate deamination at given rate')
     deamination_subparser.add_argument("-vcf",help="path to vcf to simulate damage in", type=str, required = True)
-    deamination_subparser.add_argument("-out",help="[required] path to output simulated vcf", type=str, default = "out.vcf")
+    deamination_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "out.vcf")
     deamination_subparser.add_argument("-targets", metavar='',help="Target individuals to simulate features on", type=str, default = "")
     deamination_subparser.add_argument("-rate", metavar='',help="rate at which to convert to deminated", type=float, default=0.05)
 
     # Contamination
-    contam_subparser = subparser.add_parser('contaminate', help='Simulate modern human contamination')
+    contam_subparser = subparser.add_parser('contaminate', help='Simulate contamination (either ancestral or modern human)')
     contam_subparser.add_argument("-vcf",help="path to vcf to simulate damage in", type=str, required = True)
     contam_subparser.add_argument("-mh",help="modern human flag", action = 'store_true')
     contam_subparser.add_argument("-anc",help="ancestral flag human flag", action = 'store_true')
-    contam_subparser.add_argument("-out",help="[required] path to output simulated vcf", type=str, default = "out.vcf") 
+    contam_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "out.vcf") 
     contam_subparser.add_argument("-targets", metavar='',help="Target individuals to simulate features on", type=str, default = "")
     contam_subparser.add_argument("-rate", metavar='',help="rate at which to convert to deminated", type=float, default=0.05)
     contam_subparser.add_argument("-length", metavar='',help="length of contaminating modern human fragments", type=int, default=1000)
@@ -39,20 +39,20 @@ def main():
     # downsample VCF
     downsample_subparser = subparser.add_parser('downsample', help='Downsample VCF')
     downsample_subparser.add_argument("-vcf",help="path to vcf to simulate damage in", type=str, required = True)
-    downsample_subparser.add_argument("-out",help="[required] path to output simulated vcf", type=str, default = "out.vcf")
+    downsample_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "out.vcf")
     downsample_subparser.add_argument("-num", metavar='',help="number of snps to downsample to", type=int, default=30_000)
 
     # add missingness
     missing_subparser = subparser.add_parser('missing', help='add missingness to VCF')
     missing_subparser.add_argument("-vcf",help="path to vcf to simulate damage in", type=str, required = True)
     missing_subparser.add_argument("-targets", metavar='',help="Target individuals to simulate features on", type=str, default = "")
-    missing_subparser.add_argument("-out",help="[required] path to output simulated vcf", type=str, default = "out.vcf")
+    missing_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "out.vcf")
     missing_subparser.add_argument("-rate", metavar='',help="rate of missingness to induce", type=float, default=.1)
 
     # add depth and filter
     depth_subparser = subparser.add_parser('dpFilter', help='Downsample VCF')
     depth_subparser.add_argument("-vcf",help="path to vcf to simulate damage in", type=str, required = True)
-    depth_subparser.add_argument("-out",help="[required] path to output simulated vcf", type=str, default = "out.vcf")
+    depth_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "out.vcf")
     depth_subparser.add_argument("-mean", metavar='',help="mean depth to simulate", type=int, default=5)
     depth_subparser.add_argument("-r", "--variance", metavar='',help="variance of depth to simulate", type=int, default=2)
     depth_subparser.add_argument("-distribution", metavar='',help="distribution to use to simulate depth from", type=str, default="normal")

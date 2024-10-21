@@ -1,15 +1,27 @@
+"""
+Helper file with functions to deaminate genotypes of a 
+target individual. 
+"""
+
 from helper_functions import parse_header
 import random
 
 # function to create the heterozygous deaminated genome call
 def deam_geno_call(base, rate):
+    """
+    Helper function that adds contamination to homozygous
+    reference positions at a specified rate
+    base is a biallelic genotype 
+    rate is the rate of deamination
+    simulation retains phasing 
+    """
     # only change homozygous reference positions
     if base[0] != '0' or base[2] != '0':
         return base
+    # if NOT deaminated (by chance), don't alter
     elif random.random() >= rate:
         return base
     # randomly select which allele is deaminated
-    #### this shouldn't make a difference downstream, but implement in case it does
     if base[1] == "/":
         return(f"0/1{base[3:]}")
     elif round(random.random()):
@@ -18,6 +30,11 @@ def deam_geno_call(base, rate):
         return(f"0{base[1]}1{base[3:]}")
 
 def add_deam(vcf_path, new_vcf, sample_list, rate):
+    """
+    converts homozygous reference transition genotypes 
+    to heterozygous at specified deamination rate. 
+    homozgyous alternative positions become heterozygous
+    """
     with open(vcf_path, "r") as file1, open(new_vcf, "w") as outfile:
         for line in file1:
             line = line.strip().split("\t")
