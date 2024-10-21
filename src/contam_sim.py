@@ -89,14 +89,13 @@ def add_mh_contamination(vcf_path, new_vcf, sample_list, modern_human, rate, con
                         break
                     print(f"indices of modern pops to contaminate with: {modern}")
                     if sample_list == []:
-                        # contaminate all non-modern samples (so just remove VCF specific rows)
-                        to_contam = [i for i,name in enumerate(line) if name not in exclude and name not in modern_human]
+                        # need to remove the modern human contaminating populations
+                        to_contam = [i for i in include if i not in modern]
+                        print(f"contaminating: {','.join([line[i] for i in to_contam])} with modern human")
                     else:
-                        to_contam = [i for i,name in enumerate(line) if name in include]
-                        if to_contam == []:
-                            print("provided population names not in file. Breaking")
-                            print(f"select from: {line}")
-                            break
+                        to_contam = include
+                        print(f"contaminating: {','.join([line[i] for i in to_contam])} with modern human: {','.join([line[i] for i in modern])}")
+
             else:
                 pos = int(line[header_ix["pos_ix"]])
                 # loop through samples to receive contamination:
