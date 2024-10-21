@@ -76,8 +76,6 @@ def add_mh_contamination(vcf_path, new_vcf, sample_list, modern_human, rate, con
     """
     contam_dict={}
     exclude = ["#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT"]
-    print("HERE")
-    print(modern_human)
     with open(vcf_path, "r") as file1, open(new_vcf, "w") as outfile:
         for line in file1:
             line = line.strip().split("\t")
