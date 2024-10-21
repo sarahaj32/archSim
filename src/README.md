@@ -1,9 +1,10 @@
 ## ArchSim
 
 Dependencies: Python3
+
 Required arguments:
 
-simulation mode (options: deaminate, contaminate, downsample, missing, dpFilter, )
+simulation mode (options: deaminate, contaminate, downsample, missing, dpFilter, psuedohaploid)
 
 -vcf <vcf_path>
 
@@ -51,17 +52,21 @@ N/A
 ## Examples:
 vcf = data/archaic_admix_MHtarget/original/full/vcf/original_filtered_21.vcf
 
-Example adding deamination to all individuals
+Example adding 1% modern human contamination in blocks of 500 bp to populations Vindija and Denisova from populations AFR and mh_contam:
+
+python src/main.py contaminate -mh -vcf data/archaic_admix_MHtarget/original/full/vcf/original_filtered_21.vcf -o ./test/mhcontam_21.vcf -rate 0.01 -length 500 -target Vindija,Denisova -modern AFR,mh_contam
+
+Example adding deamination to all individuals:
+
 python src/main.py deaminate -vcf data/archaic_admix_MHtarget/original/full/vcf/original_filtered_21.vcf -o ./test/deaminated_21.vcf -r 0.5
 
-Example pseudohaplotyping all individuals
+Example making all populations pseudohaploid:
+
 python src/main.py pseudohaploid -vcf data/archaic_admix_MHtarget/original/full/vcf/original_filtered_21.vcf -o ./test/pseudohaploid_21.vcf 
 
-Example pseudohaplotyping only populations 0 and 10
-python src/main.py pseudohaploid -vcf data/archaic_admix_MHtarget/original/full/vcf/original_filtered_21.vcf -o ./test/pseudohaploid_pop0pop10_21.vcf -target pop_0,pop_10
+Example making only populations 0 and 10 pseudohaploid:
 
-Example adding 1% modern human contamination in blocks of 500 bp to populations Vindija and Denisova from populations AFR and mh_contam
-python src/main.py contaminate -mh -vcf data/archaic_admix_MHtarget/original/full/vcf/original_filtered_21.vcf -o ./test/mhcontam_21.vcf -rate 0.01 -length 500 -target Vindija,Denisova -modern AFR,mh_contam
+python src/main.py pseudohaploid -vcf data/archaic_admix_MHtarget/original/full/vcf/original_filtered_21.vcf -o ./test/pseudohaploid_pop0pop10_21.vcf -target pop_0,pop_10
 
 ## Implementation details
 
