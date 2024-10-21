@@ -55,17 +55,16 @@ def main():
     depth_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "out.vcf")
     depth_subparser.add_argument("-mean", metavar='',help="mean depth to simulate", type=int, default=5)
     depth_subparser.add_argument("-r", "--variance", metavar='',help="variance of depth to simulate", type=int, default=2)
-    depth_subparser.add_argument("-distribution", metavar='',help="distribution to use to simulate depth from", type=str, default="normal")
+    # allowing varying disbributions has not been implemented yet
+    # depth_subparser.add_argument("-distribution", metavar='',help="distribution to use to simulate depth from", type=str, default="normal")
     depth_subparser.add_argument("-missing", help="flag that indiciates to remove sites with 0 reads", action = "store_true")
     depth_subparser.add_argument("-annotate", help="flag that indiciates to only annotate with depth", action = "store_true")
     depth_subparser.add_argument("-targets", metavar='',help="Target individuals to simulate features on", type=str, default = "")
 
-
-    # could make target and sources files? 
+    # futuer: could make target and sources files? 
     args = parser.parse_args()
 
-    
-    # run the features (not only one can be called at a time)
+    # run the features (for now, only one can be called at a time)
     if args.mode == "pseudohaploid":
         sample_list = parse_target_indivs(args.targets)
         print("Pseudohaplotyping")
@@ -75,11 +74,15 @@ def main():
     if args.mode == "contaminate":
         sample_list = parse_target_indivs(args.targets)
         if args.anc:
+            print(f"Adding ancestral contamination at {args.rate} rate")
             add_anc_contamination(args.vcf, args.out, sample_list, args.rate)
+            print("Finished adding ancestral contamination")
         elif args.mh:
             if args.modern == "":
                 raise Exception("modern human population is necessary for adding modern human contamination")
+            print(f"Adding modern contamination from {args.modern} at {args.rate} rate")
             add_mh_contamination(args.vcf, args.out, sample_list, args.modern, args.rate, args.length)
+            print("Finished adding modern contamination")
         else:
             raise Exception("must specify either anc for ancestral contamination or mh for modern human contamination")
 
@@ -88,35 +91,41 @@ def main():
         if not (0 < args.rate < 1):
             raise Exception("deamination rate must be above 0 and less than 1")
         else:
+            print("Adding deamination")
             add_deam(args.vcf, args.out, sample_list, args.rate)
+            print("Finished adding deamination")
 
     if args.mode == "dpFilter":
         sample_list = parse_target_indivs(args.targets)
-        if args.distribution == "poisson":
-            args.variance = args.mean
-        elif args.missing:
-            print("ALL")
+        if args.missing:
+            print("Adding depth abbitations, including missingness, and creating false homozygotes")
             fun = "pos_depth_all"
         elif args.annotate:
+            print("Adding depth annotations")
             fun = "pos_depth_only"
         else: # by default - annotate and add false homozygotes but don't induce missingness
-            print("NO REMOVE")
+            print("Adding depth abbitations and creating false homozygotes")
             fun = "pos_depth_homo"
-
-        add_depth(args.vcf, args.out, sample_list, args.mean, args.variance, args.distribution, fun)
+    
+        add_depth(args.vcf, args.out, sample_list, args.mean, args.variance, fun) # args.distribution, 
+        print("Finished adding depth")
 
     if args.mode == "downsample":
         if args.num <=0:
             raise Exception("num of positions must be > 0")
         else:
+            print(f"Beginnning downsampling to {args.num} positions")
             downsample(args.vcf, args.out, args.num)
+            print("Finished downsampling")
 
     if args.mode == "missing":
         sample_list = parse_target_indivs(args.targets)
         if not (0 < args.rate < 1):
             raise Exception("rate must be between 0 and 1")
         else:
+            print(f"Adding missingness at rate: {args.rate}")
             add_missingness(args.vcf, args.out, sample_list, args.rate)
+            print("Finished adding missingness")
 
 if __name__ == "__main__":
     print("starting")
@@ -132,5 +141,3 @@ if __name__ == "__main__":
 # bcftools view /global/scratch/p2p3/pl1_moorjani/sarahj32/superarchaic_introgression/superarchaic_analysis/data/VCFs/hg38/AltaiDen_merged_hg38_chr21.v 10000 > test_multi_geno.vcf 
 # vcf_path = "test_multi_geno.vcf"
 # sample_list = ["AltaiNea"]
-
-# python helper_files/simulator_rf.py -v <vcf_path> -s <sample_list>
