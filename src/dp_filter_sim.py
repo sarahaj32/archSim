@@ -16,7 +16,7 @@ def get_depth(mean, var):
     I should change so that it's not only normal
     """
 
-    max(round(np.random.normal(mean, var)), 0)
+    depth = max(round(np.random.normal(mean, var)), 0)
     depth1 = depth2 = depth
     return depth1, depth2
 
@@ -30,6 +30,8 @@ def pos_depth_all(pos, mean, var):
     """
 
     depth1, depth2 = get_depth(mean, var)
+    # the overall depth is the sum of the depth for each allele
+    depth = depth1 + depth2
 
     # add missing genotype if there are no reads
     if depth == 0:
@@ -46,7 +48,7 @@ def pos_depth_all(pos, mean, var):
     # heterozygous: induce false homozygous if there are 3 or fewer reads
     elif depth <= 3:
         # randomly select the allele to be homozygous
-        allele = random.choice(pos[0], pos[2]) # could adjust this line to induce a reference bias
+        allele = random.choice([pos[0], pos[2]]) # could adjust this line to induce a reference bias
         gt = f"{allele}{pos[1]}{allele}"
         if allele == 0:
             depth2 = 0
@@ -134,7 +136,6 @@ def add_depth(vcf_path, new_vcf, sample_list, mean, var, fun_name): # distributi
 
         # This is the function to apply: either pos_depth_all, pos_depth_only, pos_depth_homo
         dp_fun = globals()[fun_name]
-        print(dp_fun)
         for line in file1:
             line = line.strip().split("\t")
             if line[0].startswith("#"):
