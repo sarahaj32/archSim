@@ -105,13 +105,13 @@ def main():
         if args.mode == "dpFilter":
             sample_list = parse_target_indivs(args.targets)
             if args.missing:
-                print("Adding depth abbitations, including missingness, and creating false homozygotes")
+                print("Adding depth annotions, including missingness, and creating false homozygotes")
                 fun = "pos_depth_all"
             elif args.annotate:
                 print("Adding depth annotations")
                 fun = "pos_depth_only"
             else: # by default - annotate and add false homozygotes but don't induce missingness
-                print("Adding depth abbitations and creating false homozygotes")
+                print("Adding depth annotations and creating false homozygotes")
                 fun = "pos_depth_homo"
         
             add_depth(args.vcf, args.out, sample_list, args.mean, args.variance, fun) # args.distribution, 
