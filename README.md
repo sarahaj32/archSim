@@ -15,7 +15,7 @@ sarahj32@berkeley.edu
       - [Missing](#missing)
       - [dpFilter](#dpfilter)
 4. [Example Data](#example-data)
-5. [Combining Features](#combining-features)
+5. [Combining Features](#combining-simulated-features)
 ---
 
 ## Installation
