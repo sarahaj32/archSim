@@ -62,8 +62,11 @@ or a json file with "targets":
     -out                outputfile (defaults to downsample.vcf)
     -num                number of snps to downsample to. Default = 30,000
 
-#### missing
--**rate** rate of missingness to simulate. Default = 0.1
+> mising
+    -vcf                [required] path to the vcf to simulate data in
+    -targets            a comma separated list of targets sample names, or path to a json file 
+    -out                outputfile (defaults to missing.vcf)
+    -rate               rate at which genotypes will be converted to missing (./.). Default = 0.1
 
 #### dpFilter 
 -**mean** mean depth to simulate. Default = 5
@@ -83,23 +86,6 @@ To provide examples of archSim's usage, we simulated human data under a simple d
 vcf=simulated_data_21.vcf
 
 There is also an example json file, which identifies all of the "admixed" individuals as targets, and all of the "modern human" indivduals as contamination sources.
-
-
-Example adding 1% modern human contamination in blocks of 500 bp to populations Vindija and Denisova from populations AFR and mh_contam:
-
-python src/main.py contaminate -mh -vcf data/archaic_admix_MHtarget/original/full/vcf/original_filtered_21.vcf -out ./test/mhcontam_21.vcf -rate 0.01 -length 500 -target Vindija,Denisova -modern AFR,mh_contam
-
-Example adding deamination to all individuals:
-
-python src/main.py deaminate -vcf $vcf -out ./test/deaminated_21.vcf -r 0.5
-
-Example making all populations pseudohaploid:
-
-python src/main.py pseudohaploid -vcf $vcf -out ./test/pseudohaploid_21.vcf 
-
-Example making only populations 0 and 10 pseudohaploid:
-
-python src/main.py pseudohaploid -vcf $vcf -out ./test/pseudohaploid_pop0pop10_21.vcf -target pop_0,pop_10
 
 ## Simulation Details and Examples
 
@@ -181,4 +167,20 @@ Let's downsample our VCF to 10,000 SNPs:
 python src/main.py downsample -vcf $vcf -num -out ./test/simulated_human_downsampled_21.vcf 
 ```
 The resulting VCF has 10,008 rows, the 8 header rows from the original VCF and the 10,000 downsampled data rows. 
+
+## missing
+We simulate missing data by converting genotypes of the specified target individuals to missing (./.) at the given rate (default = 0.1)
+
+### Example:
+Let's add 10% missingness (the default) to all target individuals:
+```note
+python src/main.py missing -vcf $vcf -targets test/individuals_all.json -out ./test/simulated_human_missing_21.vcf 
+```
+
+Let's add 5% missingness to two target individuals only: admix_1, and admix_3:
+```note
+python src/main.py missing -vcf $vcf -targets admix_1,admix_3 -rate 0.05 -out ./test/simulated_human_fewMissing_21.vcf 
+```
+
+## dpFilter
 

@@ -3,12 +3,12 @@ import argparse
 from deaminate_sim import add_deam
 from pseudohaploid_sim import make_pseudohaploid
 from contam_sim import add_anc_contamination, add_mh_contamination
-from downsample import downsample, add_missingness
+from downsample import downsample
+from missing_sim import add_missingness
 from helper_functions import parse_indivs
 from dp_filter_sim import add_depth
 
 def main():
-    print("main beginning")
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     subparser = parser.add_subparsers(dest = 'mode')
 
@@ -35,20 +35,19 @@ def main():
     contam_subparser.add_argument("-targets", metavar='',help="Target individuals to simulate features on, comma separated list or json file", type=str, default = "")
     contam_subparser.add_argument("-rate", metavar='',help="rate at which to contaminate sites of target individuals", type=float, default=0.05)
     contam_subparser.add_argument("-length", metavar='',help="length of contaminating modern human fragments", type=int, default=1)
-    # this should be it's own json file
     contam_subparser.add_argument("-modern", metavar='',help="comma-separated list of individuals to contaminate with. If not provided, will look for 'contam' individuals in a json file provide with targets", type=str, default = "")
 
     # downsample VCF
     downsample_subparser = subparser.add_parser('downsample', help='Downsample VCF')
     downsample_subparser.add_argument("-vcf",help="[Required] path to vcf to simulate damage in", type=str, required = True)
-    downsample_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "out.vcf")
+    downsample_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "downsample.vcf")
     downsample_subparser.add_argument("-num", metavar='',help="number of snps to downsample to", type=int, default=30_000)
 
     # add missingness
     missing_subparser = subparser.add_parser('missing', help='add missingness to VCF')
     missing_subparser.add_argument("-vcf",help="[Required] path to vcf to simulate damage in", type=str, required = True)
     missing_subparser.add_argument("-targets", metavar='',help="Target individuals to simulate features on", type=str, default = "")
-    missing_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "out.vcf")
+    missing_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "missing.vcf")
     missing_subparser.add_argument("-rate", metavar='',help="rate of missingness to simulate", type=float, default=0.1)
 
     # add depth and filter
@@ -63,7 +62,6 @@ def main():
     depth_subparser.add_argument("-annotate", help="flag that indiciates to only annotate with depth", action = "store_true")
     depth_subparser.add_argument("-targets", metavar='',help="Target individuals to simulate features on", type=str, default = "")
 
-    # future: could make target and sources files? 
     args = parser.parse_args()
 
     # check if a simulation mode was provided
@@ -111,6 +109,22 @@ def main():
             else:
                 raise Exception("must specify either anc for ancestral contamination or mh for modern human contamination")
 
+        if args.mode == "downsample":
+            if args.num <=0:
+                raise Exception("num of positions must be > 0")
+            else:
+                print(f"Beginnning downsampling to {args.num} positions")
+                downsample(args.vcf, args.out, args.num)
+                print("Finished downsampling")
+
+        if args.mode == "missing":
+            sample_list = parse_indivs(args.targets, "target")
+            if not (0 < args.rate < 1):
+                raise Exception("rate must be between 0 and 1")
+            else:
+                print(f"Adding missingness at rate: {args.rate}")
+                add_missingness(args.vcf, args.out, sample_list, args.rate)
+                print("Finished adding missingness")
 
         if args.mode == "dpFilter":
             sample_list = parse_indivs(args.targets)
@@ -127,22 +141,6 @@ def main():
             add_depth(args.vcf, args.out, sample_list, args.mean, args.variance, fun) # args.distribution, 
             print("Finished adding depth")
 
-        if args.mode == "downsample":
-            if args.num <=0:
-                raise Exception("num of positions must be > 0")
-            else:
-                print(f"Beginnning downsampling to {args.num} positions")
-                downsample(args.vcf, args.out, args.num)
-                print("Finished downsampling")
-
-        if args.mode == "missing":
-            sample_list = parse_indivs(args.targets)
-            if not (0 < args.rate < 1):
-                raise Exception("rate must be between 0 and 1")
-            else:
-                print(f"Adding missingness at rate: {args.rate}")
-                add_missingness(args.vcf, args.out, sample_list, args.rate)
-                print("Finished adding missingness")
 
 if __name__ == "__main__":
     print("starting")
