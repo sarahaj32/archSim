@@ -50,7 +50,12 @@ def parse_header(line, sample_list):
         include_idx = [i for i,name in enumerate(line) if name not in exclude]
     else:
         # get index of specified samples
-        include_idx = [i for i,name in enumerate(line) if any([f"{s}" in name for s in sample_list])]
+        # this is matching if the only population name was given
+        include_idx = [i for i,name in enumerate(line) if any([f"{s}_" in name for s in sample_list])]
+        # if that doesn't give any matches, then look for exact matches
+        if include_idx == []:
+            include_idx = [i for i,name in enumerate(line) if any([f"{s}" == name for s in sample_list])]
+
         missing = [s for s in sample_list if not any([s in name for name in line])]
         if missing != []:
             print(f"\nWarning: the following specified samples were not found in the VCF and will be ignored: {missing}\n")
@@ -61,7 +66,7 @@ def parse_header(line, sample_list):
 
 def multiallelic(line, header_idx):
     if "," in line[header_idx["alt_ix"]]:
-        print(line)
+        print(f"Skipping multiallelic site at position {line[header_idx['pos_ix']]}")
         return True
     else:
         return False
