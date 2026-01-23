@@ -13,10 +13,13 @@ def anc_geno_call(base, rate):
     base is a biallelic genotype 
     rate is the rate of contamination
     simulation retains phasing if included in input file
+    
+    This assumes that the reference is the ancestral - must be polarized
     """
     # change any derived position
     if base[0] == '0' and base[2] == '0':
         return base
+    # at the given rate
     elif random.random() >= rate:
         return base
     # convert to the ancestral position at a set rate
@@ -24,10 +27,11 @@ def anc_geno_call(base, rate):
     else:
         if (base[0] == '0' and base[2] == '1') or (base[0] == '1' and base[2] == '0'):
             return(f"0{base[1]}0{base[3:]}")
+        # only add ancestral contamination to homozygous derived positions
         elif random.random() >= 0.5:
             if base[1] == "/":
                 return("0/1")
-            elif random.random() >= 0.5: # this should be phased data
+            elif random.random() >= 0.5: # this should be phased data - alternate chromosome
                 return(f"0{base[1]}1{base[3:]}")
             else:
                 return(f"1{base[1]}0{base[3:]}")
@@ -36,7 +40,7 @@ def anc_geno_call(base, rate):
 
 def add_anc_contamination(vcf_path, new_vcf, sample_list, contamination):
     """
-    converts derived positions to the reference at the given contamination rate
+    converts derived positions to the reference at the given contamination rate (contamination)
     heterozygous positions become homozygous reference
     homozgyous alternative positions become heterozygous
     """
@@ -46,13 +50,12 @@ def add_anc_contamination(vcf_path, new_vcf, sample_list, contamination):
             if line[0].startswith("#"): 
                 outfile.write("\t".join(line) + "\n")
                 if "#CHROM" in line[0]:
-                    _, include = parse_header(line, sample_list)
+                    _, include, name = parse_header(line, sample_list)
                     if include == []:
                         print("provided population names not in file. Breaking")
                         break
                     else:
-                        print(f"making {sample_list} samples contaminated")
-                    print(f"include:{include}")
+                        print(f"adding ancestral contamination to: {name} at {contamination} rate")
             else:
                 # add contamination to the populations of interest 
                 line = [anc_geno_call(line[i], contamination) if i in include else line[i] for i in range(len(line))]
@@ -82,19 +85,18 @@ def add_mh_contamination(vcf_path, new_vcf, sample_list, modern_human, rate, con
             if line[0].startswith("#"): 
                 outfile.write("\t".join(line) + "\n")
                 if "#CHROM" in line[0]:
-                    header_ix, include = parse_header(line, sample_list)
-                    modern = [i for i,name in enumerate(line) if any([f"{s}_" in name for s in modern_human])]
+                    header_ix, include, name = parse_header(line, sample_list)
+                    _, modern, modern_name = parse_header(line, modern_human)
                     if modern == []:
-                        print("list of modern populations is required")
+                        print("modern individuals must be included in the json file or in a comma-separated list following the -modern argument")
                         break
-                    print(f"indices of modern pops to contaminate with: {modern}")
                     if sample_list == []:
                         # need to remove the modern human contaminating populations
                         to_contam = [i for i in include if i not in modern]
-                        print(f"contaminating: {','.join([line[i] for i in to_contam])} with modern human")
+                        print(f"contaminating: {name} with modern human samples; {modern_name}")
                     else:
                         to_contam = include
-                        print(f"contaminating: {','.join([line[i] for i in to_contam])} with modern human: {','.join([line[i] for i in modern])}")
+                        print(f"contaminating: {name} with modern human: {modern_name}")
 
             else:
                 pos = int(line[header_ix["pos_ix"]])
