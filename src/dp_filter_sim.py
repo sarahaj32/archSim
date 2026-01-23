@@ -84,7 +84,10 @@ def pos_depth(pos, mean, var, ref_bias, dropout_depth, dist):
 
 def add_depth(vcf_path, new_vcf, sample_list, mean, var, ref_bias, dropout, dist):
     """
-    function that 
+    Function that simulates depth in the specified individuals, from the specified distribution 
+    with specified mean and variance. Then distributes the reads across alleles with the given 
+    dropout threshold and reference bias. Outputs :: or depth annotations to all positions, so that 
+    downstream analysis with bcftools etc. can be conducted. Removes multiallelic positions.
     """
     exclude = ["#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT"]
 
@@ -97,6 +100,11 @@ def add_depth(vcf_path, new_vcf, sample_list, mean, var, ref_bias, dropout, dist
                     outfile.write('##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allele depths">\n')
                     outfile.write('##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth">\n')
                     header_ix, include, name = parse_header(line, sample_list)
+                    if include == []:
+                        raise Exception("Provided population names not in file. Breaking")
+                    else:
+                        print(f"Simulation depth in: {name}")
+
                     exclude_ix = [i for i,name in enumerate(line) if name in exclude]
                     outfile.write("\t".join(line) + "\n")
                 # write out all header lines
@@ -110,10 +118,11 @@ def add_depth(vcf_path, new_vcf, sample_list, mean, var, ref_bias, dropout, dist
 
                 # add in depth for every line - but only to the specified individuals
                 # all other individuals get a "::" added to their FORMAT field
-                line = [pos_depth(line[i], mean, var, ref_bias, dropout, dist) if i in include else (line[i] + "::") for i in range(len(line))]
-                # remove "metrics" from the line (those don't need any depth annotations)
-                line = [line[i] for i in range(len(line)) if i not in exclude_ix]
-                # then recombine
-                line = metrics + line
+                if not multiallelic(line, header_ix):
+                    line = [pos_depth(line[i], mean, var, ref_bias, dropout, dist) if i in include else (line[i] + "::") for i in range(len(line))]
+                    # remove "metrics" from the line (those don't need any depth annotations)
+                    line = [line[i] for i in range(len(line)) if i not in exclude_ix]
+                    # then recombine
+                    line = metrics + line
 
-                outfile.write("\t".join(line) + "\n")
+                    outfile.write("\t".join(line) + "\n")

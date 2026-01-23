@@ -68,16 +68,16 @@ or a json file with "targets":
     -out                outputfile (defaults to missing.vcf)
     -rate               rate at which genotypes will be converted to missing (./.). Default = 0.1
 
-#### dpFilter 
--**mean** mean depth to simulate. Default = 5
+> dpFilter
+    -vcf                [required] path to the vcf to simulate data in
+    -targets            a comma separated list of targets sample names, or path to a json file 
+    -out                outputfile (defaults to dpFilter.vcf)
+    -mean               the mean depth to simulate. Default = 5
+    -variance           the variance of depth to simulate. Default = 2
+    -dist               distribution to sample reads around. Default = nbinom. Other options = poisson, normal
+    -bias               Reference bias threshold. Default = 0.55
+    -dropout            Minimum number of reads necessary to have a heterozygous call. Default = 3
 
--**variance** variance of depth to simulate. Default = 2
-
--**missing** flag that to convert genotypes at sites with 0 reads to missing (./.)
-
--**annotate** flag that indiciates to only annotate with depth (do not add missing genotypes, do not change genotypes to simulate homozygous bias)
-
-*** Currently, only one mode can be run at a time (adding multiple flags will run but will overwrite each file with each newly created file)
 ```
 
 ## Example Data:
@@ -183,4 +183,22 @@ python src/main.py missing -vcf $vcf -targets admix_1,admix_3 -rate 0.05 -out ./
 ```
 
 ## dpFilter
+We simulate depth for each target individual and position from a distribution with a provided mean and variance. Multiallelic positions are skipped in this step and removed from the output file. By default, depth (DP) is sampled from a negative binomial distribution wtih mean 5 and variance 3, though these parameters can be updated with input arguments. The gentoype is set to missing (./.) if there are no reads. At homozygous sites with reads, all reads are assigned to the homozygous allele. At heterozygous sites, the reads (DP) are distributed across alleles in the following way:
+- If the number of reads is less than the dropout threshold (default 3, but can be specified with the `dropout` argument), then the genotype is converted to homozygous. The allele is selected by random, following the reference bias (default 0.55 but cant be specified with the `bias` argument). For example, if bias = 0.55, 55% of the time the position will become homozygous reference, and 45% of the time the position will become homozygous alternative
+- If the number of reads are gereater than the dropout threshold, they are distributed following a binomial distribution. if either allele has no reads assigned then the genotype is homozygous for the other allele. Otherwise the reads supporting each allele are output
+
+### Example:
+Let's simulate depth in all target individuals, with the default mean, variance, distribution, dropuout, and bias
+```note
+python src/main.py dpFilter -vcf $vcf -targets test/individuals_all.json  
+```
+
+Let's simulate depth in two target individuals only (admix_2, admix_4), with mean depth of 10 and variance of 2, a dropout depth of 4 and reference bias of 0.7
+```note
+python src/main.py dpFilter -vcf $vcf -targets admix_2,admix_4 -mean 10 -variance 2 -dropout 4 -bias 0.7  
+```
+
+## Combining Simulated Features
+Each run of archSim only will simulate one feature. However, features can be combined by stringing together  
+
 
