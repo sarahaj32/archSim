@@ -4,7 +4,7 @@ or modern human contamination from a given set of modern populations
 at a given contamination rate
 """
 
-from helper_functions import parse_header
+from helper_functions import parse_header, multiallelic
 import random
 
 def anc_geno_call(base, rate):
