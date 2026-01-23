@@ -7,8 +7,14 @@ sarahj32@berkeley.edu
 ---
 1. [Installation](#installation)
 2. [Usage](#usage)
-3. [Simulation Details and Examples](#simulation-details-and-dxamples)
-4. [Examples](#examples)
+3. [Simulation Details and Examples](#simulation-details-and-examples)
+      - [Psuedohaploid](#pseudohaploid)
+      - [Deaminate](#deaminate)
+      - [Contaminate](#contaminate)
+      - [Downsample](#downsample)
+      - [Missing](#missing)
+      - [dpFilter](#dpfilter)
+4. [Example Data](#example-data)
 5. [Combining Features](#combining-features)
 ---
 
@@ -117,7 +123,8 @@ Let's simulate deamination-related errors in the target individuals only:
 python src/main.py deaminate -vcf $vcf -targets test/individuals_all.json -out ./test/simulated_human_deaminated_21.vcf 
 ```
 
-## contaminate (ancestral):
+## contaminate 
+## (ancestral):
 We simulate faunal contamination by converting derived alleles to the ancestral at the specified rate (0.05 by default). If a site is contaminated and converted to heterozygous, and the orignal genotype was phased, the ancestral allele will be randomly assinged between chromosomes. Multiallelic positions are skipped in this step and removed from the output file. 
 
 Note - this assumes that the VCF is polarized so that the reference allele is ancestral and the alternative allele is derived. If the VCF is not polarized, ancestral contamination can be simulated using the "modern human" simulation mode (see next section).
@@ -133,7 +140,7 @@ Let's simulate a large amount of ancestral contamination in the target individua
 python src/main.py contaminate -vcf $vcf -targets test/individuals_all.json -ancestral -rate 0.2 -out ./test/simulated_human_highAncContam_21.vcf 
 ```
 
-## contaminate (modern human):
+## (modern human):
 We simulate modern human contamination by replacing the genotypes of the target individuals with the genotypes of a randomly selected contaminating individual, at at specified rate (default = 0.05). At each position in each individual, the contaminating genotype will be randomly selected from genotypes at that position of all the contaminating individuals. 
 
 Contamination from the same individual can be simulated into the same target individual in chunks by specifying the length argument. If the `-length 1000` argument is added, then at the given rate the target individual's next 1000 genotypes will be replaced by the next 1000 genotypes of one of the contaminating individuals. Note that if all VCF snps are at least 1000 bp apart, the `-length 1000` will yield the same results as not specifying the length (or `-length 1`). If VCF snps are closer than 1000 bp, then the resulting contamination amount will be slightly higher than the provided rate, since the rate specifies how often the chunk of 1000 bp are replaced, but each contamination event contributes more than 1 contaminating genotype
