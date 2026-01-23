@@ -57,9 +57,11 @@ def add_anc_contamination(vcf_path, new_vcf, sample_list, contamination):
                     else:
                         print(f"adding ancestral contamination to: {name} at {contamination} rate")
             else:
+                # remove any multiallelic sites, since we can't handle those here
+                if not multiallelic(line, header_ix):
                 # add contamination to the populations of interest 
-                line = [anc_geno_call(line[i], contamination) if i in include else line[i] for i in range(len(line))]
-                outfile.write("\t".join(line) + "\n")
+                    line = [anc_geno_call(line[i], contamination) if i in include else line[i] for i in range(len(line))]
+                    outfile.write("\t".join(line) + "\n")
 
 def add_contam_object(dict, pos, cont_range, receive, contam):
     """
