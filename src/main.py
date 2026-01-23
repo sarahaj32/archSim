@@ -53,14 +53,13 @@ def main():
     # add depth and filter
     depth_subparser = subparser.add_parser('dpFilter', help='Downsample VCF')
     depth_subparser.add_argument("-vcf",help="path to vcf to simulate damage in", type=str, required = True)
-    depth_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "out.vcf")
+    depth_subparser.add_argument("-targets", metavar='',help="Target individuals to simulate features on", type=str, default = "")
+    depth_subparser.add_argument("-out",help="path to output simulated vcf", type=str, default = "dpFilter.vcf")
     depth_subparser.add_argument("-mean", metavar='',help="mean depth to simulate", type=int, default=5)
     depth_subparser.add_argument("-variance", metavar='',help="variance of depth to simulate", type=int, default=2)
-    # allowing varying disbributions has not been implemented yet
-    # depth_subparser.add_argument("-distribution", metavar='',help="distribution to use to simulate depth from", type=str, default="normal")
-    depth_subparser.add_argument("-missing", help="flag that indiciates to remove sites with 0 reads", action = "store_true")
-    depth_subparser.add_argument("-annotate", help="flag that indiciates to only annotate with depth", action = "store_true")
-    depth_subparser.add_argument("-targets", metavar='',help="Target individuals to simulate features on", type=str, default = "")
+    depth_subparser.add_argument("-dropout", help="threshold for the minimum number of reads to call a heterozygous site", type=int, default=3)
+    depth_subparser.add_argument("-bias", help="reference bias", type=float, default=0.55)
+    depth_subparser.add_argument("-dist", help="distribution to sample the depth of each position from", type=str, default="nbinom")
 
     args = parser.parse_args()
 
@@ -127,18 +126,8 @@ def main():
                 print("Finished adding missingness")
 
         if args.mode == "dpFilter":
-            sample_list = parse_indivs(args.targets)
-            if args.missing:
-                print("Adding depth annotions, including missingness, and creating false homozygotes")
-                fun = "pos_depth_all"
-            elif args.annotate:
-                print("Adding depth annotations")
-                fun = "pos_depth_only"
-            else: # by default - annotate and add false homozygotes but don't induce missingness
-                print("Adding depth annotations and creating false homozygotes")
-                fun = "pos_depth_homo"
-        
-            add_depth(args.vcf, args.out, sample_list, args.mean, args.variance, fun) # args.distribution, 
+            sample_list = parse_indivs(args.targets, "target")
+            add_depth(args.vcf, args.out, sample_list, args.mean, args.variance, args.bias, args.dropout, args.dist) 
             print("Finished adding depth")
 
 
