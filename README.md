@@ -99,6 +99,13 @@ With these files, you can replicate all of the below examples.
 
 ## Simulation Details and Examples
 
+To run the below examples, with the provided test dataset, define the vcf variable to the be the test data:
+```bash
+vcf=test/simulated_data.vcf
+```
+
+All output files will be saved in the `test` directory.
+
 ## pseudohaploid:
 At every position, an allele will be randomly selected from each target individual, and the genotype will become homozygous for that allele. Homozygous positions will be unaffected, but heterozygous positions will be converted to homozygous reference or homozygous alternative with an even probability. If the input is phased VCF, the output pseudohaploid VCF will still be phased. 
 
