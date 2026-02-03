@@ -50,7 +50,7 @@ def add_anc_contamination(vcf_path, new_vcf, sample_list, contamination):
             if line[0].startswith("#"): 
                 outfile.write("\t".join(line) + "\n")
                 if "#CHROM" in line[0]:
-                    _, include, name = parse_header(line, sample_list)
+                    header_ix, include, name = parse_header(line, sample_list)
                     if include == []:
                         print("provided population names not in file. Breaking")
                         break
