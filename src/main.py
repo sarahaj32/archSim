@@ -78,7 +78,7 @@ def main():
         
         if args.mode == "deaminate":
             sample_list = parse_indivs(args.targets, "target")
-            if not (0 < args.rate < 1):
+            if not (0 <= args.rate <= 1):
                 raise Exception("deamination rate must be above 0 and less than 1")
             if args.proportion:
                 if not (0 <= args.proportion <= 1):
@@ -118,7 +118,7 @@ def main():
 
         if args.mode == "missing":
             sample_list = parse_indivs(args.targets, "target")
-            if not (0 < args.rate < 1):
+            if not (0 <= args.rate <= 1):
                 raise Exception("rate must be between 0 and 1")
             else:
                 print(f"Adding missingness at rate: {args.rate}")
