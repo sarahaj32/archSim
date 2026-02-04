@@ -84,6 +84,11 @@ Note that input VCFs must be unzipped prior to running
 
 ```
 
+## Input Data
+The main input is a VCF file. This file must be uncompressed. 
+There are also optional input files containing target and contaminating individual names. In these files, each individual is on a new line. The sample names in these files must match individual names in the VCF file
+
+
 ## Example Data:
 To provide examples of archSim's usage, we simulated human data under a simple demography with an outgroup (representing African modern humans), a deeply divergent lineage (representing archaic hominins), and an admixed population between the outgroup and diverged lineage (representing non-African modern humans). The admixed population was sampled shortly after admixture and at present day, representing an ancient individual and modern human.
 
@@ -98,7 +103,7 @@ In this dataset, the following names correspond to the following populations:
 | mh\_contam      | Modern humans with archaic admixture, sampled at present time         |
 
 
-There are also example target and individual files `test/targets.txt` and `test/contam.txt`, which identifies all of the "admixed" individuals as targets, and all of the "modern human" indivduals as contamination sources. Note the format of these files are that each sample name is on a new line, and names much match the ID's in the VCF file.
+There are also example target and individual files `test/targets.txt` and `test/contam.txt`, which identifies all of the "admixed" individuals as targets, and all of the "modern human" indivduals as contamination sources. 
 
 With these files, you can replicate all of the below examples.
 
