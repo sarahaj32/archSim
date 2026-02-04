@@ -1,4 +1,5 @@
 import json
+import os.path
 
 def parse_indivs(samp_input, ind_type):
     """
@@ -6,7 +7,13 @@ def parse_indivs(samp_input, ind_type):
     """
     if ".json" in samp_input:
         return(parse_indivs_from_json(samp_input, ind_type))
-    # if the input is a comma-separated string, parse the individuals
+    # if the input is a file with one individual per line
+    
+    if not "," in samp_input:
+        if os.path.isfile(samp_input):
+            return(parse_indivs_from_ind_file(samp_input))
+        
+    # Otherwise assume the input is a comma-separated string, parse the individuals    
     sample_list = samp_input.strip()
     if sample_list == "":
         sample_list = []
@@ -26,6 +33,18 @@ def parse_indivs_from_json(samp_json, ind_type):
     # select the target or contam individuals
     samples = data[ind_type]
     sample_list = [s.strip() for s in samples]  
+    return(sample_list)
+
+def parse_indivs_from_ind_file(samp_ind):
+    """
+    A helper function that parses a text file, and returns a list of individuals in the file
+    ind_type should be either "target" or "contam" to match the json file
+    """
+    sample_list = []
+    with open(samp_ind, "r") as f:
+        for line in f:
+            samp = line.strip()
+            sample_list.append(samp)
     return(sample_list)
 
 def parse_header(line, sample_list):
